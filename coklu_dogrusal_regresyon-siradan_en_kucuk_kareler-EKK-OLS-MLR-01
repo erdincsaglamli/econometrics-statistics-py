@@ -1,0 +1,82 @@
+
+
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import mean_squared_error, r2_score
+import statsmodels.api as sm
+
+
+##############################+ DOĞRUSAL REGRESYON (LR) +##############################
+
+
+# bağımsız değişkenlerin matrisini oluşturma(tek değişken)
+#train(eğitim)
+x_train = np.array([5, 15, 25, 35, 45, 55]).reshape((-1, 1))
+#test
+x_test = np.arange(5).reshape((-1,1))
+
+# bağımlı değişkenlerin vektörünü oluşturma
+y = np.array([5, 20, 14, 32, 22, 38])
+
+# doğrusal modeli tanımlama (birinci arg == True, modelin içinde sabit değişken olduğunu ifade eder.)
+model = LinearRegression(fit_intercept = True, normalize = False)
+
+# 1. Aşama: Fitting
+fit_model = model.fit(x_train,y)
+
+# 2. Aşama: Tahminleme
+y_pred = fit_model.predict(x_test)
+
+# 3. Aşama: R^2 Hesaplama 
+R_sq = fit_model.score(x,y)
+
+# Sonuçları Raporlama
+print("R^2 : ", R_sq)
+print("Kesişim :",fit_model.intercept_)    #Veri kümesinin doğrusal regresyonundan elde edilen doğrunun y ekseniyle kesişeceği y değerini hesaplar (x=0).
+print("Katsayı :",fit_model.coef_)         #Ceteris paribus, ana bağımsız değişkenin etkisi.
+print("Tahmin edilmiş y :", y_pred, sep = '\n')
+
+
+
+##############################+ ÇOKLU DOĞRUSAL REGRESYON (MLR) +##############################
+
+
+#train
+x_train = [[0, 1], [5, 1], [15, 2], [25, 5], [35, 11], [45, 15], [55, 34], [60, 35]]
+#test
+x_test = [[0, 2], [4, 2], [13, 1], [20, 3], [30, 10], [42, 12], [50, 30], [58, 32]]
+#Bağımlı Değişken
+y = [4, 5, 20, 14, 32, 22, 38, 43]
+
+x_train, y = np.array(x_train), np.array(y)
+print(x_train,y)
+
+
+# Kesişim elde etmek için sabit sütunun tahmin edicinin matrisine eklenmesi. (Opsiyonel)
+x_train = sm.add_constant(x_train)
+x_test = sm.add_constant(x_test)
+print(x_train, x_test)
+
+model = LinearRegression()
+fit_model = model.fit(x_train,y)
+R_sq = fit_model.score(x_train,y)
+print("R^2 : ", R_sq)
+print("Kesişim :",fit_model.intercept_)
+print("Kat Sayılar :",fit_model.coef_)
+y_pred = fit_model.predict(x_test)
+print(y_pred)
+
+
+##############################+ SIRADAN EN KÜÇÜK KARELER (OLS) +##############################
+
+model = sm.OLS(y,x)
+fit_model = model.fit()
+print(fit_model.summary())
+print('R^2:', fit_model.rsquared)
+print('Düzeltilmiş R^2 :', fit_model.rsquared_adj)
+# tahmin
+y_pred = fit_model.predict(x_new)
+print('Tahnmin Sonucu:', y_pred, sep='\n')
+
+
